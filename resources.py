@@ -16,19 +16,19 @@ class Interface(Resource):
         self.parser.add_argument('password')
 
     def get(self, iface_id):
-        return {iface_id: ifaddresses(iface_id)[AF_INET]}
+        return {'interfaces': {iface_id: ifaddresses(iface_id)[AF_INET]}}
 
     def post(self, iface_id):
-        args = parser.parse_args()
+        args = self.parser.parse_args()
         res  = Wireless(iface_id).connect(args['ssid'], args['password'])
 
         if res:
             db.session.add(WifiSettings(iface_id, args['ssid'], args['password']))
             db.session.commit()
 
-        return {iface_id: {'ssid': args['ssid'],
+        return {'interfaces': {iface_id: {'ssid': args['ssid'],
                            'password': args['password'],
-                           'connected': res}}
+                           'connected': res}}}
 
 api = Api(app)
 api.add_resource(Interfaces, API_PREFIX+'/interfaces')

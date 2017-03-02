@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 from application import app
 
 db = SQLAlchemy(app)
-db.create_all()
 
 class WifiSettings(db.Model):
     id       = db.Column(db.Integer, primary_key=True)
@@ -11,7 +10,7 @@ class WifiSettings(db.Model):
     password = db.Column(db.String(120))
 
     def __init__(self, iface, ssid, password):
-        self.iface    = username
+        self.iface    = iface
         self.ssid     = ssid
         self.password = password
 
