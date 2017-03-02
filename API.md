@@ -18,7 +18,7 @@ Take a list of WLAN interfaces
 }
 ```
 
-### `/api/v1/interfaces/<id>`
+### `/api/v1/interfaces/<iface_id>`
 
 #### GET
 
@@ -60,5 +60,46 @@ Connect WLAN interface to access point
             "ssid": "myssid"
         }
     }
+}
+```
+
+### `/api/v1/containers`
+
+#### GET
+
+Take interface-container pairs
+
+##### Response
+
+```json
+{
+    "containers": {"wlan0": "123123123123"}
+}
+
+```
+
+### `/api/v1/containers/<iface_id>`
+
+#### GET
+
+Take container status by interface identifier
+
+##### Response
+
+```json
+{
+    "containers": {"wlan0": {"1231231231": {"status": "running"}}}
+}
+```
+
+##### POST
+
+Run container for given interface
+
+##### Response
+
+```json
+{
+    "containers": {"wlan0": {"1231231231": {"status": "running"}}}
 }
 ```
