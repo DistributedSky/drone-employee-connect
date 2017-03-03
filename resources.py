@@ -1,8 +1,10 @@
 from flask_restful import Resource, Api, reqparse
 from netifaces import ifaddresses, AF_INET
+from platform import machine, processor
 from wireless import Wireless
 from docker import from_env
 from models import *
+import psutil, time
 
 API_PREFIX = '/api/v1'
 
@@ -17,7 +19,9 @@ class Interface(Resource):
         self.parser.add_argument('password')
 
     def get(self, iface_id):
-        return {'interfaces': {iface_id: ifaddresses(iface_id)[AF_INET]}}
+        return {'interfaces': {
+                    iface_id: ifaddresses(iface_id)[AF_INET]
+                }}
 
     def post(self, iface_id):
         args = self.parser.parse_args()
@@ -27,9 +31,12 @@ class Interface(Resource):
             db.session.add(WifiSettings(iface_id, args['ssid'], args['password']))
             db.session.commit()
 
-        return {'interfaces': {iface_id: {'ssid': args['ssid'],
-                           'password': args['password'],
-                           'connected': res}}}
+        return {'interfaces': {
+                    iface_id: {
+                        'ssid': args['ssid'],
+                        'password': args['password'],
+                        'connected': res
+                    }}}
 
 DRONE_EMPLOYEE_DOCKER='scratch'
 
@@ -56,10 +63,27 @@ class Container(Resource):
         container = self.docker.run(DRONE_EMPLOYEE_DOCKER, detach=True)
         db.session.add(Link(iface_id, container.short_id))
         db.session.commit()
-        return {'containers': {iface_id: {container.short_id: {'status': container.status}}}}
+        return {'containers': {
+                    iface_id: {
+                        container.short_id: {
+                            'status': container.status
+                        }
+                    }}}
+
+class Hardware(Resource):
+    def get(self):
+        return {'hardware':
+                    { 'processor': processor()
+                    , 'arch': machine()
+                    , 'time': time.time()
+                    , 'usage': {
+                        'cpu': psutil.cpu_percent(interval=1, percpu=True),
+                        'mem': psutil.virtual_memory().percent
+                    }}}
 
 api = Api(app)
 api.add_resource(Interfaces, API_PREFIX+'/interfaces')
 api.add_resource(Interface,  API_PREFIX+'/interfaces/<iface_id>')
 api.add_resource(Containers, API_PREFIX+'/containers')
 api.add_resource(Container,  API_PREFIX+'/containers/<iface_id>')
+api.add_resource(Hardware,   API_PREFIX+'/hardware')
