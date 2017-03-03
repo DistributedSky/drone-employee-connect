@@ -103,3 +103,30 @@ Run container for given interface
     "containers": {"wlan0": {"1231231231": {"status": "running"}}}
 }
 ```
+
+### `/api/v1/hardware`
+
+#### GET
+
+Take hardware information
+
+##### Response
+
+```json
+{
+    "hardware": {
+        "arch": "x86_64",
+        "processor": "Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz",
+        "time": 1488543849.1191475,
+        "usage": {
+            "cpu": [
+                5.1,
+                5.1,
+                1.0,
+                3.0
+            ],
+            "mem": 25.3
+        }
+    }
+}
+```
