@@ -63,21 +63,6 @@ Connect WLAN interface to access point
 }
 ```
 
-### `/api/v1/containers`
-
-#### GET
-
-Take interface-container pairs
-
-##### Response
-
-```json
-{
-    "containers": {"wlan0": "123123123123"}
-}
-
-```
-
 ### `/api/v1/containers/<iface_id>`
 
 #### GET
@@ -96,11 +81,34 @@ Take container status by interface identifier
 
 Run container for given interface
 
+##### Request
+
+* `image` - Docker image name
+
 ##### Response
 
 ```json
 {
     "containers": {"wlan0": {"1231231231": {"status": "running"}}}
+}
+```
+### `/api/v1/drones/<iface_id>`
+
+#### GET
+
+Take common drone information
+
+##### Response
+
+```json
+{
+    "drones": {
+        "wlan1": {
+            "battery": 73,
+            "signal": 80,
+            "stamp": 33213321
+        }
+    }
 }
 ```
 
@@ -116,16 +124,18 @@ Take hardware information
 {
     "hardware": {
         "arch": "x86_64",
+        "internet": true,
         "processor": "Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz",
-        "time": 1488543849.1191475,
+        "system": "Linux",
+        "time": 1488786523.0755541,
         "usage": {
             "cpu": [
-                5.1,
-                5.1,
-                1.0,
+                4.0,
+                2.0,
+                4.0,
                 3.0
             ],
-            "mem": 25.3
+            "mem": 27.5
         }
     }
 }
