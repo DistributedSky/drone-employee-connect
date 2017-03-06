@@ -4,8 +4,8 @@ from os import system as system_call
 from netifaces import ifaddresses
 from wireless import Wireless
 from docker import from_env
-from models import *
 import psutil, time
+from models import *
 
 API_PREFIX = '/api/v1'
 
@@ -50,7 +50,7 @@ class Container(Resource):
 
     def get(self, iface_id):
         short_id = Link.query.filter_by(iface_id=iface_id).first()
-        c = self.docker.get(short_id)
+        c = self.docker.containers.get(short_id)
         return {'containers': {
                     iface_id: {
                         short_id: {

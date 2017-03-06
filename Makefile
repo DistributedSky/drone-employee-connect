@@ -1,7 +1,7 @@
 all: venv
 	. venv/bin/activate && python serve.py
 
-DEPS=flask-restful flask-sqlalchemy wireless netifaces docker-py psutil
+DEPS=flask-restful flask-sqlalchemy wireless netifaces docker psutil
 
 venv:
 	virtualenv --python=python3 venv
