@@ -49,14 +49,17 @@ class Container(Resource):
         self.parser.add_argument('image')
 
     def get(self, iface_id):
-        short_id = Link.query.filter_by(iface_id=iface_id).first()
-        c = self.docker.containers.get(short_id)
-        return {'containers': {
+        link = Link.query.filter_by(iface_id=iface_id).first()
+        if link:
+            c = self.docker.containers.get(link.short_id)
+            return {'containers': {
                     iface_id: {
                         short_id: {
                             'status': c.status,
                             'image': c.image
                         }}}}
+        else:
+            return {'error': 'Container not found'}
 
     def post(self, iface_id):
         link = Link.query.filter_by(iface_id=iface_id).first()
