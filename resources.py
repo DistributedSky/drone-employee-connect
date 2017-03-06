@@ -52,31 +52,30 @@ class Container(Resource):
 
     def get(self, iface):
         link = Link.query.filter_by(iface=iface).first()
-        if link:
+        try:
             c = self.docker.containers.get(link.short)
             return {'containers': {
                     iface: {
-                        short: {
+                        link.short: {
                             'status': c.status,
-                            'image': c.image
                         }}}}
-        else:
+        except:
             return {'error': 'Container not found'}
 
     def post(self, iface):
-        link = Link.query.filter_by(iface=iface).first()
-        try:
-            c = self.docker.containers.get(link.short_id);
-            c.stop()
-            c.remove()
-            db.session.delete(link)
-        except:
-            pass
-
         args = self.parser.parse_args()
         container = self.docker.containers.run('droneemployee/'+args['image'], detach=True)
-        db.session.add(Link(iface, container.short_id))
+
+        link = Link.query.filter_by(iface=iface).first()
+        try:
+            c = self.docker.containers.get(link.short);
+            c.stop()
+            c.remove()
+            link.short = container.short_id
+        except:
+            db.session.add(Link(iface, container.short_id))
         db.session.commit()
+
         return {'containers': {
                     iface: {
                         container.short_id: {
