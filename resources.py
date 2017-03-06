@@ -19,24 +19,26 @@ class Interface(Resource):
         self.parser.add_argument('ssid')
         self.parser.add_argument('password')
 
-    def get(self, iface_id):
+    def get(self, iface):
         return {'interfaces': {
-                    iface_id: ifaddresses(iface_id)
+                    iface: ifaddresses(iface)
                 }}
 
-    def post(self, iface_id):
+    def post(self, iface):
         args = self.parser.parse_args()
-        res  = Wireless(iface_id).connect(args['ssid'], args['password'])
+        res  = Wireless(iface).connect(args['ssid'], args['password'])
 
         if res:
-            prev = WifiSettings.query.filter_by(iface_id=iface_id).first()
-            if prev:
-                db.session.delete(prev)
-            db.session.add(WifiSettings(iface_id, args['ssid'], args['password']))
+            wifi = WifiSettings.query.filter_by(iface=iface).first()
+            try:
+                wifi.ssid = args['ssid']
+                wifi.password = args['password']
+            except:
+                db.session.add(WifiSettings(iface, args['ssid'], args['password']))
             db.session.commit()
 
         return {'interfaces': {
-                    iface_id: {
+                    iface: {
                         'ssid': args['ssid'],
                         'password': args['password'],
                         'connected': res
@@ -48,33 +50,35 @@ class Container(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('image')
 
-    def get(self, iface_id):
-        link = Link.query.filter_by(iface_id=iface_id).first()
+    def get(self, iface):
+        link = Link.query.filter_by(iface=iface).first()
         if link:
-            c = self.docker.containers.get(link.short_id)
+            c = self.docker.containers.get(link.short)
             return {'containers': {
-                    iface_id: {
-                        short_id: {
+                    iface: {
+                        short: {
                             'status': c.status,
                             'image': c.image
                         }}}}
         else:
             return {'error': 'Container not found'}
 
-    def post(self, iface_id):
-        link = Link.query.filter_by(iface_id=iface_id).first()
-        if link:
+    def post(self, iface):
+        link = Link.query.filter_by(iface=iface).first()
+        try:
             c = self.docker.containers.get(link.short_id);
             c.stop()
             c.remove()
             db.session.delete(link)
+        except:
+            pass
 
         args = self.parser.parse_args()
-        container = self.docker.containers.run('drone-employee/'+args['image'], detach=True)
-        db.session.add(Link(iface_id, container.short_id))
+        container = self.docker.containers.run('droneemployee/'+args['image'], detach=True)
+        db.session.add(Link(iface, container.short_id))
         db.session.commit()
         return {'containers': {
-                    iface_id: {
+                    iface: {
                         container.short_id: {
                             'status': container.status,
                             'image': args['image']
@@ -102,24 +106,24 @@ class Drone(Resource):
         self.parser.add_argument('signal')
         self.parser.add_argument('stamp')
 
-    def get(self, iface_id):
-        drone = DroneInfo.query.filter_by(iface_id=iface_id).first()
+    def get(self, iface):
+        drone = DroneInfo.query.filter_by(iface=iface).first()
         return {'drones':{
-                    iface_id: {
+                    iface: {
                     'battery': drone.battery,
                     'signal': drone.signal,
                     'stamp': drone.stamp
                     }}}
 
-    def post(self, iface_id):
+    def post(self, iface):
         args = self.parser.parse_args()
-        db.session.add(DroneInfo(iface_id, args['battery'], args['signal'], args['stamp']))
+        db.session.add(DroneInfo(iface, args['battery'], args['signal'], args['stamp']))
         db.session.commit()
         return {'success': True}
 
 api = Api(app)
 api.add_resource(Interfaces, API_PREFIX+'/interfaces')
-api.add_resource(Interface,  API_PREFIX+'/interfaces/<iface_id>')
-api.add_resource(Container,  API_PREFIX+'/containers/<iface_id>')
-api.add_resource(Drone,      API_PREFIX+'/drones/<iface_id>')
+api.add_resource(Interface,  API_PREFIX+'/interfaces/<iface>')
+api.add_resource(Container,  API_PREFIX+'/containers/<iface>')
+api.add_resource(Drone,      API_PREFIX+'/drones/<iface>')
 api.add_resource(Hardware,   API_PREFIX+'/hardware')
