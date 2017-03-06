@@ -44,6 +44,7 @@ class Interface(Resource):
 
 class Container(Resource):
     def __init__(self):
+        self.docker = from_env()
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('image')
 
@@ -58,8 +59,15 @@ class Container(Resource):
                         }}}}
 
     def post(self, iface_id):
+        link = Link.query.filter_by(iface_id=iface_id).first()
+        if link:
+            c = self.docker.containers.get(link.short_id);
+            c.stop()
+            c.remove()
+            db.session.delete(link)
+
         args = self.parser.parse_args()
-        container = self.docker.run('drone-employee/'+args['image'], detach=True)
+        container = self.docker.containers.run('drone-employee/'+args['image'], detach=True)
         db.session.add(Link(iface_id, container.short_id))
         db.session.commit()
         return {'containers': {
