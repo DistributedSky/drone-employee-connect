@@ -7,6 +7,9 @@ const Docker = props => (
       {props.status === 'no' &&
         <button onClick={() => props.runDocker(props.name, 'developer')} className="btn btn-info pull-right">Run</button>
       }
+      {props.status === 'run' &&
+        <span className="pull-right">Waiting</span>
+      }
       {props.short !== '' &&
         <button onClick={() => props.getStatus(props.name)} className="btn btn-info pull-right">getStatus</button>
       }

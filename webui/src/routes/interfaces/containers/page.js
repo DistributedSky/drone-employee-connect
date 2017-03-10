@@ -5,16 +5,19 @@ import _ from 'lodash';
 import { getHardware } from '../../../modules/interfaces/actions';
 
 class Container extends Component {
-  componentWillMount() {
-    if (!this.props.isHardware) {
-      this.props.getHardware();
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      interval: null
+    };
   }
-
-  componentWillReceiveProps(next) {
-    if (!next.isHardware) {
-      this.props.getHardware();
-    }
+  
+  componentWillMount() {
+	if (_.isEmpty(this.state.interval)) {
+		this.props.getHardware();
+		const interval = setInterval(this.props.getHardware, 15000);
+		this.setState({ interval });
+	}
   }
 
   render() {

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import _ from 'lodash';
 import { Main } from '../components/show';
-import { getInfo, connect as connectHadle, getStatusDocker, runDocker, getHardware, getDrone } from '../../../modules/interfaces/actions';
+import { getInfo, connect as connectHadle, getStatusDocker, runDocker, getDrone } from '../../../modules/interfaces/actions';
 
 class ContainerShow extends Component {
   static propTypes = {
@@ -15,8 +15,6 @@ class ContainerShow extends Component {
     getStatusDocker: PropTypes.func.isRequired,
     isDrone: PropTypes.bool.isRequired,
     getDrone: PropTypes.func.isRequired,
-    isHardware: PropTypes.bool.isRequired,
-    getHardware: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -29,9 +27,6 @@ class ContainerShow extends Component {
       }
       if (!this.props.isDrone) {
         this.props.getDrone();
-      }
-      if (!this.props.isHardware) {
-        this.props.getHardware();
       }
     } else {
       this.context.router.push('/');
@@ -47,9 +42,6 @@ class ContainerShow extends Component {
     }
     if (!next.isDrone) {
       this.props.getDrone();
-    }
-    if (!next.isHardware) {
-      this.props.getHardware();
     }
   }
 
@@ -95,7 +87,6 @@ function mapDispatchToProps(dispatch, props) {
     getStatusDocker,
     runDocker,
     getDrone,
-    getHardware,
   }, dispatch);
   return {
     connectHadle: (ssid, password) => actions.connectHadle(props.params.name, ssid, password),
@@ -103,7 +94,6 @@ function mapDispatchToProps(dispatch, props) {
     getStatusDocker: actions.getStatusDocker,
     runDocker: actions.runDocker,
     getDrone: () => actions.getDrone(props.params.name),
-    getHardware: actions.getHardware,
   };
 }
 
