@@ -2,16 +2,27 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 const Container = (props) => {
-  const { children } = props;
+  const { children, internet } = props;
   return (<div>
-    <h1>Interfaces</h1>
+    <h1>Interfaces<div className={internet ? 'label label-success pull-right' : 'label label-danger pull-right'}>internet</div></h1>
     <hr />
     {children}
   </div>);
 };
 
 Container.propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.element.isRequired,
+  internet: PropTypes.bool
 };
 
-export default connect()(Container);
+Container.defaultProps = {
+  internet: false
+};
+
+function mapStateToProps(state) {
+  return {
+    internet: state.interfaces.hardware.internet
+  };
+}
+
+export default connect(mapStateToProps)(Container);
