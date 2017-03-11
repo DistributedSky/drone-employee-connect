@@ -1,59 +1,41 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import _ from 'lodash';
-import { getHardware } from '../../../modules/interfaces/actions';
+import { Menu } from '../components/common';
 
-class Container extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      interval: null
-    };
-  }
-  
-  componentWillMount() {
-	if (_.isEmpty(this.state.interval)) {
-		this.props.getHardware();
-		const interval = setInterval(this.props.getHardware, 15000);
-		this.setState({ interval });
-	}
-  }
+const ContainerPage = props => (
+  <div>
+    <h1>Interfaces</h1>
+    <hr />
+    <div className="row">
+      <div className="col-md-3">
+        <Menu {...props.menu} />
+      </div>
+      <div className="col-md-9">
+        <div className="panel panel-default">
+          <div className="panel-body">
+            {props.children}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
-  render() {
-    const { children, internet } = this.props;
-    return (<div>
-      <h1>Interfaces<div className={internet ? 'label label-success pull-right' : 'label label-danger pull-right'}>internet</div></h1>
-      <hr />
-      {children}
-    </div>);
-  }
-}
-
-Container.propTypes = {
+ContainerPage.propTypes = {
   children: PropTypes.element.isRequired,
-  internet: PropTypes.bool,
-  isHardware: PropTypes.bool.isRequired,
-  getHardware: PropTypes.func.isRequired
+  menu: PropTypes.shape({
+    list: PropTypes.arrayOf(React.PropTypes.object).isRequired,
+    active: PropTypes.string
+  }).isRequired,
 };
 
-Container.defaultProps = {
-  internet: false
-};
-
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
-    internet: state.interfaces.hardware.internet,
-    isHardware: !_.isEmpty(state.interfaces.hardware)
-  };
-}
-function mapDispatchToProps(dispatch) {
-  const actions = bindActionCreators({
-    getHardware,
-  }, dispatch);
-  return {
-    getHardware: actions.getHardware,
+    menu: {
+      active: props.params.name,
+      list: state.interfaces.list
+    }
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Container);
+export default connect(mapStateToProps)(ContainerPage);

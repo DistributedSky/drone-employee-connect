@@ -1,14 +1,14 @@
-import axios from 'axios';
 import _ from 'lodash';
 import { LOAD, SET_STATUS_CONNECT, SET_INFO, SET_DOCKER, SET_HARDWARE, SET_DRONE } from './actionTypes';
-import { URL_ROOT } from '../../config/config';
+import * as api from '../../utils/api';
+import { setError } from '../app/actions';
 
 export const load = () => (
   (dispatch) => {
-    axios.get(`${URL_ROOT}/interfaces`)
+    api.get('/interfaces')
       .then((response) => {
         const interfaces = [];
-        _.forEach(response.data.interfaces, (item) => {
+        _.forEach(response.interfaces, (item) => {
           interfaces.push({
             name: item,
             connect: false,
@@ -23,16 +23,16 @@ export const load = () => (
         });
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(setError(error));
       });
   }
 );
 
 export const getInfo = name => (
   (dispatch) => {
-    axios.get(`${URL_ROOT}/interfaces/${name}`)
+    api.get(`/interfaces/${name}`)
       .then((response) => {
-        _.forEach(response.data.interfaces[name], (item) => {
+        _.forEach(response.interfaces[name], (item) => {
           if (_.has(item[0], 'addr') && _.has(item[0], 'broadcast') && _.has(item[0], 'netmask')) {
             dispatch({
               type: SET_INFO,
@@ -56,14 +56,14 @@ export const getInfo = name => (
         });
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(setError(error));
       });
   }
 );
 
 export const connect = (name, ssid, password) => (
   (dispatch) => {
-    axios.post(`${URL_ROOT}/interfaces/${name}`, {
+    api.post(`/interfaces/${name}`, {
       ssid,
       password
     })
@@ -72,21 +72,24 @@ export const connect = (name, ssid, password) => (
           type: SET_STATUS_CONNECT,
           payload: {
             name,
-            status: response.data.interfaces[name].connected
+            status: response.interfaces[name].connected
           }
         });
+        if (response.interfaces[name].connected) {
+          dispatch(getInfo(name));
+        }
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(setError(error));
       });
   }
 );
 
 export const getStatusDocker = name => (
   (dispatch) => {
-    axios.get(`${URL_ROOT}/containers/${name}`)
+    api.get(`/containers/${name}`)
       .then((response) => {
-        if (_.has(response.data, 'error')) {
+        if (_.has(response, 'error')) {
           dispatch({
             type: SET_DOCKER,
             payload: {
@@ -97,7 +100,7 @@ export const getStatusDocker = name => (
             }
           });
         } else {
-          _.forEach(response.data.containers[name], (item, short) => {
+          _.forEach(response.containers[name], (item, short) => {
             dispatch({
               type: SET_DOCKER,
               payload: {
@@ -112,7 +115,7 @@ export const getStatusDocker = name => (
         }
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(setError(error));
       });
   }
 );
@@ -128,11 +131,11 @@ export const runDocker = (name, image) => (
         }
       }
     });
-    axios.post(`${URL_ROOT}/containers/${name}`, {
+    api.post(`/containers/${name}`, {
       image
     })
       .then((response) => {
-        _.forEach(response.data.containers[name], (item, short) => {
+        _.forEach(response.containers[name], (item, short) => {
           dispatch({
             type: SET_DOCKER,
             payload: {
@@ -146,51 +149,40 @@ export const runDocker = (name, image) => (
         });
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(setError(error));
       });
   }
 );
 
 export const getDrone = name => (
   (dispatch) => {
-    axios.get(`${URL_ROOT}/drones/${name}`)
+    api.get(`/drones/${name}`)
       .then((response) => {
         dispatch({
           type: SET_DRONE,
           payload: {
             name,
-            drone: response.data.drones[name]
+            drone: response.drones[name]
           }
         });
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(setError(error));
       });
-    // dispatch({
-    //   type: SET_DRONE,
-    //   payload: {
-    //     name,
-    //     drone: {
-    //       battery: 73,
-    //       signal: 80,
-    //       stamp: 33213321
-    //     }
-    //   }
-    // });
   }
 );
 
 export const getHardware = () => (
   (dispatch) => {
-    axios.get(`${URL_ROOT}/hardware`)
+    api.get('/hardware')
       .then((response) => {
         dispatch({
           type: SET_HARDWARE,
-          payload: response.data.hardware
+          payload: response.hardware
         });
       })
       .catch((error) => {
-        console.log(error);
+        dispatch(setError(error));
       });
   }
 );

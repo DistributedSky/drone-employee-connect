@@ -9,38 +9,25 @@ class ContainerShow extends Component {
   static propTypes = {
     empty: PropTypes.bool.isRequired,
     name: PropTypes.string.isRequired,
-    isInfo: PropTypes.bool.isRequired,
     getInfo: PropTypes.func.isRequired,
-    isContainer: PropTypes.bool.isRequired,
     getStatusDocker: PropTypes.func.isRequired,
-    isDrone: PropTypes.bool.isRequired,
     getDrone: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
     if (!this.props.empty) {
-      if (!this.props.isInfo) {
-        this.props.getInfo();
-      }
-      if (!this.props.isContainer) {
-        this.props.getStatusDocker(this.props.name);
-      }
-      if (!this.props.isDrone) {
-        this.props.getDrone();
-      }
+      this.props.getInfo();
+      this.props.getStatusDocker(this.props.name);
+      this.props.getDrone();
     } else {
       this.context.router.push('/');
     }
   }
 
   componentWillReceiveProps(next) {
-    if (!next.isInfo) {
+    if (next.name !== this.props.name) {
       this.props.getInfo();
-    }
-    if (!next.isContainer) {
       this.props.getStatusDocker(next.name);
-    }
-    if (!next.isDrone) {
       this.props.getDrone();
     }
   }
@@ -58,11 +45,7 @@ function mapStateToProps(state, props) {
   if (_.isEmpty(item)) {
     return {
       empty: true,
-      name: '',
-      isInfo: false,
-      isContainer: false,
-      isDrone: false,
-      isHardware: false,
+      name: ''
     };
   }
   return {
@@ -71,13 +54,8 @@ function mapStateToProps(state, props) {
     list: state.interfaces.list,
     isConnect: item.connect,
     info: item.info,
-    isInfo: !_.isEmpty(item.info),
     container: item.container,
-    isContainer: !_.isEmpty(item.container),
-    hardware: state.interfaces.hardware,
-    isHardware: !_.isEmpty(state.interfaces.hardware),
-    drone: item.drone,
-    isDrone: !_.isEmpty(item.drone),
+    drone: item.drone
   };
 }
 function mapDispatchToProps(dispatch, props) {
