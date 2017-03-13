@@ -4,7 +4,7 @@ const initialState = {
   error: ''
 };
 
-export default function interfaces(state = initialState, action) {
+export default function app(state = initialState, action) {
   switch (action.type) {
     case SET_ERROR: {
       return { ...state, error: action.payload };

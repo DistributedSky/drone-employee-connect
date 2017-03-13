@@ -23,7 +23,7 @@ export const load = () => (
         });
       })
       .catch((error) => {
-        dispatch(setError(error));
+        dispatch(setError(`load interfaces: ${error.toString()}`));
       });
   }
 );
@@ -56,7 +56,7 @@ export const getInfo = name => (
         });
       })
       .catch((error) => {
-        dispatch(setError(error));
+        dispatch(setError(`getInfo interface: ${error.toString()}`));
       });
   }
 );
@@ -80,7 +80,7 @@ export const connect = (name, ssid, password) => (
         }
       })
       .catch((error) => {
-        dispatch(setError(error));
+        dispatch(setError(`connect: ${error.toString()}`));
       });
   }
 );
@@ -115,7 +115,7 @@ export const getStatusDocker = name => (
         }
       })
       .catch((error) => {
-        dispatch(setError(error));
+        dispatch(setError(`getStatusDocker: ${error.toString()}`));
       });
   }
 );
@@ -149,7 +149,7 @@ export const runDocker = (name, image) => (
         });
       })
       .catch((error) => {
-        dispatch(setError(error));
+        dispatch(setError(`runDocker: ${error.toString()}`));
       });
   }
 );
@@ -167,7 +167,7 @@ export const getDrone = name => (
         });
       })
       .catch((error) => {
-        dispatch(setError(error));
+        dispatch(setError(`getDrone: ${error.toString()}`));
       });
   }
 );
@@ -182,7 +182,7 @@ export const getHardware = () => (
         });
       })
       .catch((error) => {
-        dispatch(setError(error));
+        dispatch(setError(`getHardware: ${error.toString()}`));
       });
   }
 );
