@@ -2,15 +2,21 @@ import React, { PropTypes } from 'react';
 
 const Docker = props => (
   <div>
-    <h2>
-      Container
+    <div className="pull-right">
+      {props.status === '' &&
+        <span>...</span>
+      }
       {props.status === 'no' &&
-        <button onClick={() => props.runDocker(props.name, 'developer')} className="btn btn-info pull-right">Run</button>
+        <button onClick={() => props.runDocker(props.name, 'developer')} className="btn btn-info">Run</button>
+      }
+      {props.status === 'run' &&
+        <span className="pull-right">Waiting</span>
       }
       {props.short !== '' &&
-        <button onClick={() => props.getStatus(props.name)} className="btn btn-info pull-right">getStatus</button>
+        <button onClick={() => props.getStatus(props.name)} className="btn btn-info">getStatus</button>
       }
-    </h2>
+    </div>
+    <h2>Container</h2>
     {props.short !== '' &&
       <table className="table table-bordered">
         <tbody>

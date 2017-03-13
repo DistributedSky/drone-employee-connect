@@ -24,9 +24,15 @@ const Drone = props => (
 
 Drone.propTypes = {
   getInfo: PropTypes.func.isRequired,
-  battery: PropTypes.number.isRequired,
-  signal: PropTypes.number.isRequired,
-  stamp: PropTypes.number.isRequired
+  battery: PropTypes.number,
+  signal: PropTypes.number,
+  stamp: PropTypes.number
+};
+
+Drone.defaultProps = {
+  battery: 0,
+  signal: 0,
+  stamp: 0
 };
 
 export default Drone;

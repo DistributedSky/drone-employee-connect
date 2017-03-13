@@ -1,21 +1,9 @@
-import React, { PropTypes } from 'react';
-import Menu from './menu';
+import React from 'react';
 
-const Main = props => (
-  <div className="row">
-    <div className="col-md-3">
-      <Menu list={props.list} active={''} />
-    </div>
-    <div className="col-md-9">
-      <div className="panel panel-default">
-        <div className="panel-body">Выберите интерфейс</div>
-      </div>
-    </div>
+const Main = () => (
+  <div>
+    Выберите интерфейс
   </div>
 );
-
-Main.propTypes = {
-  list: PropTypes.arrayOf(React.PropTypes.object).isRequired
-};
 
 export default Main;

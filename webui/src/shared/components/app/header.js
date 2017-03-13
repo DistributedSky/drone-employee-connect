@@ -14,13 +14,28 @@ const Header = function Header(props) {
           </button>
           <Link to="/" className="navbar-brand">{props.title}</Link>
         </div>
+        <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul className="nav navbar-nav navbar-right">
+            <li><Link to="/">Interfaces</Link></li>
+            <li>
+              <Link to="/hardware">
+                Hardware <span className={props.internet ? 'glyphicon glyphicon-globe text-success' : 'glyphicon glyphicon-globe text-danger'} />
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
   );
 };
 
 Header.propTypes = {
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
+  internet: PropTypes.bool
+};
+
+Header.defaultProps = {
+  internet: false
 };
 
 export default Header;

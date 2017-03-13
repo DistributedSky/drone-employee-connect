@@ -1,24 +1,48 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import _ from 'lodash';
 import Header from '../components/app/header';
 import Footer from '../components/app/footer';
+import Notification from '../components/app/notification';
+import { getHardware } from '../../modules/interfaces/actions';
+import { setError } from '../../modules/app/actions';
 
 import './style.css';
 
 class App extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
-    title: PropTypes.string.isRequired
+    title: PropTypes.string.isRequired,
+    error: PropTypes.string,
+    internet: PropTypes.bool.isRequired,
+    getHardware: PropTypes.func.isRequired,
+    setError: PropTypes.func.isRequired
+  };
+  static defaultProps = {
+    error: ''
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      interval: null
+    };
+  }
+
   componentWillMount() {
-    console.log(this);
+    if (_.isEmpty(this.state.interval)) {
+      this.props.getHardware();
+      const interval = setInterval(this.props.getHardware, 15000);
+      this.setState({ interval });
+    }
   }
 
   render() {
     return (<div>
-      <Header title={this.props.title} />
+      <Header title={this.props.title} internet={this.props.internet} />
       <div className="container">
+        <Notification message={this.props.error} onClose={() => this.props.setError('')} />
         {this.props.children}
       </div>
       <Footer />
@@ -26,10 +50,25 @@ class App extends Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
   return {
-    title: 'Admin'
+    title: 'Admin',
+    error: state.app.error,
+    internet: (_.has(state.interfaces, 'hardware') && _.has(state.interfaces.hardware, 'internet')) ?
+      state.interfaces.hardware.internet
+      :
+      false
+  };
+}
+function mapDispatchToProps(dispatch) {
+  const actions = bindActionCreators({
+    getHardware,
+    setError,
+  }, dispatch);
+  return {
+    getHardware: actions.getHardware,
+    setError: actions.setError,
   };
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
