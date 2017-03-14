@@ -1,6 +1,8 @@
 DroneEmployee Connect architecture reference
 --------------------------------------------
 
+### 3DR Solo connection scheme
+
 ![Structure scheme](https://raw.githubusercontent.com/DroneEmployee/drone-employee-connect/master/docs/architecture.png)
 
 * each drone connected by WiFi to Hardware
