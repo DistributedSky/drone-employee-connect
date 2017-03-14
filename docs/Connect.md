@@ -5,3 +5,12 @@ DroneEmployee Connect architecture reference
 
 * each drone connected by WiFi to Hardware
 * each drone associated by wlan with Docker container
+
+## Multidrone
+
+Any drone handled by *Adapter* container; they gives abstraction
+layer over drone type, interfaces, etc.
+
+Multiple *Adapter* instances connected to *Master* container.
+Master determines the behaviour of drones based on drone state,
+map, tasks and other resources.

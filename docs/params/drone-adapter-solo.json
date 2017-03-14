@@ -1,0 +1,22 @@
+{
+    {
+        "type": "text",
+        "key": "ssid",
+        "label": "SSID"
+    },
+    {
+        "type": "password",
+        "key": "password",
+        "label": "Password"
+    },
+    {
+        "type": "wlan",
+        "key": "wlan",
+        "label": "WIFI interface"
+    },
+    {
+        "type": "container",
+        "key": "master",
+        "label": "Drone master"
+    }
+}
