@@ -42,6 +42,7 @@ Run container for given interface
 ##### Request
 
 * `image` - Docker image name
+* `params` - JSON list of key/value image params
 
 ##### Response
 
@@ -67,26 +68,6 @@ Take container full logs
     "containers": {
         "81227f9dea": {
             "logs": "b'\\x1b]0;root@81227f9dea15: /\\x07root@81227f9dea15:/# \\r\\x1b[K\\x1b]0;root@81227f9dea15: /\\x07root@81227f9dea15:/# \\r\\n\\x1b]0;root@81227f9dea15: /\\x07root@81227f9dea15:/# assd\\r\\nbash: assd: command not found\\r\\n'"
-        }
-    }
-}
-```
-
-### `/api/v1/drones/<short_id>`
-
-#### GET
-
-Take common drone information
-
-##### Response
-
-```json
-{
-    "drones": {
-        "wlan1": {
-            "battery": 73,
-            "signal": 80,
-            "stamp": 33213321
         }
     }
 }
