@@ -53,8 +53,25 @@ Run container for given interface
         }
     }
 }
-
 ```
+### `/api/v1/containers/<short_id>/logs`
+
+#### GET
+
+Take container full logs
+
+##### Response
+
+```json
+{
+    "containers": {
+        "81227f9dea": {
+            "logs": "b'\\x1b]0;root@81227f9dea15: /\\x07root@81227f9dea15:/# \\r\\x1b[K\\x1b]0;root@81227f9dea15: /\\x07root@81227f9dea15:/# \\r\\n\\x1b]0;root@81227f9dea15: /\\x07root@81227f9dea15:/# assd\\r\\nbash: assd: command not found\\r\\n'"
+        }
+    }
+}
+```
+
 ### `/api/v1/drones/<short_id>`
 
 #### GET
