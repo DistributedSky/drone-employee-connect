@@ -3,17 +3,14 @@ from platform import machine, processor, system
 from os import system as system_call
 from netifaces import interfaces 
 from docker import from_env
-import psutil, time
-from models import *
+from application import app
+import psutil, time, json
 
 API_PREFIX = '/api/v1'
 
 class Containers(Resource):
-    def __init__(self):
-        self.docker = from_env()
-
     def get(self):
-        containerIds = map(lambda x: x.short_id, self.docker.containers.list())
+        containerIds = map(lambda x: x.short_id, from_env().containers.list())
         return {'containers': list(containerIds)} 
 
 class Container(Resource):
@@ -21,8 +18,7 @@ class Container(Resource):
         self.docker = from_env()
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('image')
-        self.parser.add_argument('ssid')
-        self.parser.add_argument('password')
+        self.parser.add_argument('params')
 
     def get(self, short_id):
         c = self.docker.containers.get(short_id)
@@ -42,7 +38,10 @@ class Container(Resource):
 
     def post(self):
         args = self.parser.parse_args()
+        params = json.loads(args['params'])
+        env = map(lambda k, v: k.upper()+'='+v, params)
         container = self.docker.containers.run('droneemployee/'+args['image'],
+                                                environment=list(env),
                                                 privileged=True,
                                                 detach=True)
         return {'containers': {
@@ -73,31 +72,8 @@ class Hardware(Resource):
                         'mem': psutil.virtual_memory().percent
                     }}}
 
-class Drone(Resource):
-    def __init__(self):
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument('battery')
-        self.parser.add_argument('signal')
-        self.parser.add_argument('stamp')
-
-    def get(self, short_id):
-        drone = DroneInfo.query.filter_by(container=short_id).first()
-        return {'drones':{
-                    short_id: {
-                    'battery': drone.battery,
-                    'signal': drone.signal,
-                    'stamp': drone.stamp
-                    }}}
-
-    def post(self, short_id):
-        args = self.parser.parse_args()
-        db.session.add(DroneInfo(short_id, args['battery'], args['signal'], args['stamp']))
-        db.session.commit()
-        return {'success': True}
-
 api = Api(app)
 api.add_resource(Containers,    API_PREFIX+'/containers')
 api.add_resource(Container,     API_PREFIX+'/containers/<short_id>')
 api.add_resource(ContainerLogs, API_PREFIX+'/containers/<short_id>/logs')
-api.add_resource(Drone,         API_PREFIX+'/drones/<short_id>')
-api.add_resource(Hardware,   API_PREFIX+'/hardware')
+api.add_resource(Hardware,      API_PREFIX+'/hardware')
