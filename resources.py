@@ -52,7 +52,10 @@ class Container(Resource):
 
 class ContainerLogs(Resource):
     def get(self, short_id):
-        return from_env().containers.get(short_id).logs() 
+        return {'containers': {
+                    short_id: {
+                        'logs': '{0}'.format(from_env().containers.get(short_id).logs())
+                        }}}
 
 class Hardware(Resource):
     def get(self):
