@@ -1,69 +1,23 @@
 REST API
 -------------
 
-### `/api/v1/interfaces`
+### `/api/v1/containers`
 
 #### GET
 
-Take a list of WLAN interfaces 
+Get list of active containers
 
-##### response
+##### Response
 
 ```json
 {
-    "interfaces": [
-        "wlan0",
-        "wlan1"
+    "containers": [
+        "2f44230ab5"
     ]
 }
 ```
 
-### `/api/v1/interfaces/<iface_id>`
-
-#### GET
-
-Take WLAN interface information
-
-##### Response
-
-```json
-{
-    "interfaces": {
-        "wlan0": [
-            {
-                "addr": "192.168.5.1",
-                "broadcast": "192.168.5.255",
-                "netmask": "255.255.255.0"
-            }
-        ]
-    }
-}
-```
-
-#### POST
-
-Connect WLAN interface to access point
-
-##### Request
-
-* `ssid` - access point SSID
-* `password` - access point WPA/WPA2 password
-
-##### Response
-
-```json
-{
-    "interfaces": {
-        "wlan1": {
-            "connected": true,
-            "password": "1234567890",
-            "ssid": "myssid"
-        }
-    }
-}
-```
-
-### `/api/v1/containers/<iface_id>`
+### `/api/v1/containers/<short_id>`
 
 #### GET
 
@@ -73,7 +27,11 @@ Take container status by interface identifier
 
 ```json
 {
-    "containers": {"wlan0": {"1231231231": {"status": "running"}}}
+    "containers": {
+        "2f44230ab5": {
+            "status": "running"
+        }
+    }
 }
 ```
 
@@ -89,10 +47,15 @@ Run container for given interface
 
 ```json
 {
-    "containers": {"wlan0": {"1231231231": {"status": "running"}}}
+    "containers": {
+        "2f44230ab5": {
+            "status": "running"
+        }
+    }
 }
+
 ```
-### `/api/v1/drones/<iface_id>`
+### `/api/v1/drones/<short_id>`
 
 #### GET
 
@@ -125,18 +88,20 @@ Take hardware information
     "hardware": {
         "arch": "x86_64",
         "internet": true,
-        "processor": "Intel(R) Core(TM) i3-3110M CPU @ 2.40GHz",
         "system": "Linux",
-        "time": 1488786523.0755541,
+        "time": 1489482800.5335846,
         "usage": {
             "cpu": [
-                4.0,
-                2.0,
-                4.0,
-                3.0
+                3.0,
+                3.0,
+                7.1,
+                5.0
             ],
-            "mem": 27.5
-        }
+            "mem": 35.0
+        },
+        "wlans": [
+            "wlan0"
+        ]
     }
 }
 ```
