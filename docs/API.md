@@ -17,24 +17,6 @@ Get list of active containers
 }
 ```
 
-### `/api/v1/containers/<short_id>`
-
-#### GET
-
-Take container status by interface identifier
-
-##### Response
-
-```json
-{
-    "containers": {
-        "2f44230ab5": {
-            "status": "running"
-        }
-    }
-}
-```
-
 ##### POST
 
 Run container for given interface
@@ -55,6 +37,25 @@ Run container for given interface
     }
 }
 ```
+
+### `/api/v1/containers/<short_id>`
+
+#### GET
+
+Take container status by interface identifier
+
+##### Response
+
+```json
+{
+    "containers": {
+        "2f44230ab5": {
+            "status": "running"
+        }
+    }
+}
+```
+
 ### `/api/v1/containers/<short_id>/logs`
 
 #### GET
