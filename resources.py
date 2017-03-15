@@ -9,45 +9,46 @@ import psutil, time, json
 API_PREFIX = '/api/v1'
 
 class Containers(Resource):
-    def get(self):
-        containerIds = map(lambda x: x.short_id, from_env().containers.list())
-        return {'containers': list(containerIds)} 
-
-class Container(Resource):
     def __init__(self):
-        self.docker = from_env()
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('image')
         self.parser.add_argument('params')
 
-    def get(self, short_id):
-        c = self.docker.containers.get(short_id)
-        return {'containers': {
-                    short_id: {
-                        'status': c.status,
-                        }}}
-
-    def delete(self, short_id):
-        try:
-            c = self.docker.containers.get(short_id);
-            c.stop()
-            c.remove()
-            return {'success': True}
-        except e:
-            return {'success': False, 'error': e}
+    def get(self):
+        containerIds = map(lambda x: x.short_id, from_env().containers.list())
+        return {'containers': list(containerIds)} 
 
     def post(self):
         args = self.parser.parse_args()
         params = json.loads(args['params'])
         env = map(lambda k, v: k.upper()+'='+v, params)
-        container = self.docker.containers.run('droneemployee/'+args['image'],
-                                                environment=list(env),
-                                                privileged=True,
-                                                detach=True)
+        container = from_env().containers.run('droneemployee/'+args['image'],
+                                              environment=list(env),
+                                              privileged=True,
+                                              detach=True)
         return {'containers': {
                     container.short_id: {
-                        'status': container.status
+                        'status': container.status,
+                        'image': container.attrs['Config']['Image']
                     }}}
+
+class Container(Resource):
+    def get(self, short_id):
+        c = from_env().containers.get(short_id)
+        return {'containers': {
+                    short_id: {
+                        'status': c.status,
+                        'image': c.attrs['Config']['Image']
+                        }}}
+
+    def delete(self, short_id):
+        try:
+            c = from_env().containers.get(short_id);
+            c.stop()
+            c.remove()
+            return {'success': True}
+        except e:
+            return {'success': False, 'error': e}
 
 class ContainerLogs(Resource):
     def get(self, short_id):
