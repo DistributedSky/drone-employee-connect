@@ -1,0 +1,7 @@
+{
+    {
+        "type": "text",
+        "key": "db_conn_string",
+        "label": "Messenger bot database URI"
+    }
+}
