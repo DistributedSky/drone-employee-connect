@@ -5,7 +5,7 @@ import _ from 'lodash';
 import Header from '../components/app/header';
 import Footer from '../components/app/footer';
 import Notification from '../components/app/notification';
-import { getHardware } from '../../modules/interfaces/actions';
+import { load, getHardware } from '../../modules/interfaces/actions';
 import { setError } from '../../modules/app/actions';
 
 import './style.css';
@@ -16,6 +16,7 @@ class App extends Component {
     title: PropTypes.string.isRequired,
     error: PropTypes.string,
     internet: PropTypes.bool.isRequired,
+    load: PropTypes.func.isRequired,
     getHardware: PropTypes.func.isRequired,
     setError: PropTypes.func.isRequired
   };
@@ -31,6 +32,7 @@ class App extends Component {
   }
 
   componentWillMount() {
+    this.props.load();
     if (_.isEmpty(this.state.interval)) {
       this.props.getHardware();
       const interval = setInterval(this.props.getHardware, 15000);
@@ -62,10 +64,12 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   const actions = bindActionCreators({
+    load,
     getHardware,
     setError,
   }, dispatch);
   return {
+    load: actions.load,
     getHardware: actions.getHardware,
     setError: actions.setError,
   };

@@ -1,10 +1,15 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Menu } from '../components/common';
+import { load } from '../../../modules/interfaces/actions';
 
 const ContainerPage = props => (
   <div>
-    <h1>Interfaces</h1>
+    <h1>
+      Containers
+      <button onClick={() => props.load()} className="btn btn-info pull-right">update</button>
+    </h1>
     <hr />
     <div className="row">
       <div className="col-md-3">
@@ -27,6 +32,7 @@ ContainerPage.propTypes = {
     list: PropTypes.arrayOf(React.PropTypes.object).isRequired,
     active: PropTypes.string
   }).isRequired,
+  load: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state, props) {
@@ -37,5 +43,13 @@ function mapStateToProps(state, props) {
     }
   };
 }
+function mapDispatchToProps(dispatch) {
+  const actions = bindActionCreators({
+    load
+  }, dispatch);
+  return {
+    load: actions.load
+  };
+}
 
-export default connect(mapStateToProps)(ContainerPage);
+export default connect(mapStateToProps, mapDispatchToProps)(ContainerPage);

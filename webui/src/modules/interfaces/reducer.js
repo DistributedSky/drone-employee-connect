@@ -1,46 +1,42 @@
+import _ from 'lodash';
 import {
+  START_LOAD,
   LOAD,
-  SET_STATUS_CONNECT,
-  SET_INFO, SET_DOCKER,
-  SET_HARDWARE,
-  SET_DRONE
+  NEW_DOCKER,
+  SET_DOCKER,
+  SET_LOG,
+  SET_HARDWARE
 } from './actionTypes';
 
 const initialState = {
+  docker: false,
   hardware: {},
+  loadList: false,
   list: []
 };
 
 export default function interfaces(state = initialState, action) {
   switch (action.type) {
+    case START_LOAD: {
+      return { ...state, loadList: true };
+    }
+
     case LOAD: {
-      return { ...state, list: action.payload };
+      const list = action.payload.map((item) => {
+        const con = _.find(state.list, { name: item.name });
+        if (con) {
+          return con;
+        }
+        return {
+          name: item.name,
+          status: ''
+        };
+      });
+      return { ...state, list, loadList: false };
     }
 
-    case SET_STATUS_CONNECT: {
-      const list = state.list.map((item) => {
-        if (item.name === action.payload.name) {
-          return {
-            ...item,
-            connect: action.payload.status
-          };
-        }
-        return item;
-      });
-      return { ...state, list };
-    }
-
-    case SET_INFO: {
-      const list = state.list.map((item) => {
-        if (item.name === action.payload.name) {
-          return {
-            ...item,
-            info: action.payload.info
-          };
-        }
-        return item;
-      });
-      return { ...state, list };
+    case NEW_DOCKER: {
+      return { ...state, docker: action.payload };
     }
 
     case SET_DOCKER: {
@@ -48,7 +44,7 @@ export default function interfaces(state = initialState, action) {
         if (item.name === action.payload.name) {
           return {
             ...item,
-            container: action.payload.container
+            status: action.payload.status
           };
         }
         return item;
@@ -56,12 +52,12 @@ export default function interfaces(state = initialState, action) {
       return { ...state, list };
     }
 
-    case SET_DRONE: {
+    case SET_LOG: {
       const list = state.list.map((item) => {
         if (item.name === action.payload.name) {
           return {
             ...item,
-            drone: action.payload.drone
+            log: action.payload.log
           };
         }
         return item;
