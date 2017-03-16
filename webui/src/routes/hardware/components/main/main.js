@@ -16,10 +16,6 @@ const Main = props => (
                 <td>{(props.internet) ? 'true' : 'false'}</td>
               </tr>
               <tr>
-                <th><code>processor</code></th>
-                <td>{props.processor}</td>
-              </tr>
-              <tr>
                 <th><code>system</code></th>
                 <td>{props.system}</td>
               </tr>
@@ -66,7 +62,6 @@ const Main = props => (
 Main.propTypes = {
   arch: PropTypes.string,
   internet: PropTypes.bool,
-  processor: PropTypes.string,
   system: PropTypes.string,
   time: PropTypes.number,
   usage: PropTypes.shape({
@@ -79,7 +74,6 @@ Main.propTypes = {
 Main.defaultProps = {
   arch: '',
   internet: false,
-  processor: '',
   system: '',
   time: 0,
   usage: {

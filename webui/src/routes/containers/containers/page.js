@@ -1,14 +1,18 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Link } from 'react-router';
 import { Menu } from '../components/common';
 import { load } from '../../../modules/interfaces/actions';
 
 const ContainerPage = props => (
   <div>
     <h1>
-      Containers
-      <button onClick={() => props.load()} className="btn btn-info pull-right">update</button>
+      Modules
+      <div className="btn-group pull-right">
+        <Link to="/new" className="btn btn-info"><span className="glyphicon glyphicon-plus" /></Link>
+        <button onClick={() => props.load()} className="btn btn-info"><span className="glyphicon glyphicon-refresh" /></button>
+      </div>
     </h1>
     <hr />
     <div className="row">

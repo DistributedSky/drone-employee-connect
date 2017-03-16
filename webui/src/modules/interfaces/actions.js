@@ -60,20 +60,15 @@ export const getStatusDocker = name => (
   }
 );
 
-export const runDocker = (ssid, password, wlan, master) => (
+export const runDocker = (image, form) => (
   (dispatch) => {
     dispatch({
       type: NEW_DOCKER,
       payload: true
     });
     api.post('/containers', {
-      image: 'developer',
-      params: JSON.stringify({
-        ssid,
-        password,
-        wlan,
-        master
-      })
+      image,
+      params: JSON.stringify(form)
     })
       .then((response) => {
         if (_.has(response, 'message')) {
