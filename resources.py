@@ -21,7 +21,7 @@ class Containers(Resource):
     def post(self):
         args = self.parser.parse_args()
         params = json.loads(args['params'])
-        env = map(lambda k, v: k.upper()+'='+v, params)
+        env = map(lambda key: key.upper()+'='+params[key], params)
         container = from_env().containers.run('droneemployee/'+args['image'],
                                               environment=list(env),
                                               privileged=True,
