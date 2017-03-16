@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 const sourcePath = path.join(__dirname, './src');
-const staticsPath = path.join(__dirname, './static');
+const staticsPath = path.join(__dirname, '../static');
 
 module.exports = function (env) {
   const nodeEnv = env && env.prod ? 'production' : 'development';
@@ -87,7 +87,11 @@ module.exports = function (env) {
         },
         {
           test: /\.(js|jsx)$/,
-          exclude: /node_modules/,
+          include: [
+            sourcePath,
+            /node_modules\/ansi-to-html/,
+          ],
+          // exclude: /node_modules/,
           use: [
             'babel-loader'
           ],
