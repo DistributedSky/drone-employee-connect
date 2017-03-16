@@ -1,8 +1,11 @@
 import _ from 'lodash';
+import Convert from 'ansi-to-html';
 import { START_LOAD, LOAD, NEW_DOCKER, SET_DOCKER, SET_LOG, SET_HARDWARE } from './actionTypes';
 import * as api from '../../utils/api';
 // import * as api from '../../utils/api_v1_test';
 import { setError } from '../app/actions';
+
+const convert = new Convert();
 
 export const load = () => (
   (dispatch) => {
@@ -101,7 +104,7 @@ export const getLog = name => (
           type: SET_LOG,
           payload: {
             name,
-            log: response.containers[name].logs.replace(/\\x1b\[0m\\n\\x1b/g, '<br />').replace(/\\n/g, '<br />')
+            log: convert.toHtml(response.containers[name].logs.replace(/\\x1b/g, '\x1b').replace(/\\n/g, '<br />').replace(/\\'/g, '\''))
           }
         });
       })
