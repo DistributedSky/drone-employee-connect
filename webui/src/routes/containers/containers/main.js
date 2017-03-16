@@ -7,25 +7,17 @@ import { load } from '../../../modules/interfaces/actions';
 
 class ContainerMain extends Component {
   static propTypes = {
-    load: PropTypes.func.isRequired,
-    exist: PropTypes.bool.isRequired
+    loadList: PropTypes.bool.isRequired,
+    load: PropTypes.func.isRequired
   };
 
   componentWillMount() {
-    if (!this.props.exist) {
-      this.props.load();
-    }
-  }
-
-  componentWillReceiveProps(next) {
-    if (!next.exist) {
-      this.props.load();
-    }
+    this.props.load();
   }
 
   render() {
-    if (!this.props.exist) {
-      return (<p>...</p>);
+    if (this.props.loadList) {
+      return <p>...</p>;
     }
     return (<Main {...this.props} />);
   }
@@ -33,7 +25,7 @@ class ContainerMain extends Component {
 
 function mapStateToProps(state) {
   return {
-    list: state.interfaces.list,
+    loadList: state.interfaces.loadList,
     exist: !_.isEmpty(state.interfaces.list)
   };
 }

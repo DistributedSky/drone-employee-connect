@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 const Menu = props => (
   <div className="list-group">
     {props.list.map((item, index) =>
-      <Link key={index} to={`/interface/${item.name}`} className={(props.active === item.name) ? 'list-group-item active' : 'list-group-item'}>
+      <Link key={index} to={`/containers/${item.name}`} className={(props.active === item.name) ? 'list-group-item active' : 'list-group-item'}>
         {item.name}
       </Link>
     )}

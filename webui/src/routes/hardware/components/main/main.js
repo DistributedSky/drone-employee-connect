@@ -43,6 +43,18 @@ const Main = props => (
                   </ul>
                 </td>
               </tr>
+              <tr>
+                <th><code>wlans</code></th>
+                <td>
+                  <ul>
+                    {props.wlans.map((item, index) =>
+                      <li key={index}>
+                        {item}
+                      </li>
+                    )}
+                  </ul>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -60,7 +72,8 @@ Main.propTypes = {
   usage: PropTypes.shape({
     cpu: PropTypes.array,
     mem: PropTypes.number
-  })
+  }),
+  wlans: PropTypes.array
 };
 
 Main.defaultProps = {
@@ -72,7 +85,8 @@ Main.defaultProps = {
   usage: {
     cpu: [],
     mem: 0
-  }
+  },
+  wlans: []
 };
 
 export default Main;

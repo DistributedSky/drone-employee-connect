@@ -1,20 +1,24 @@
 import _ from 'lodash';
-import { LOAD, SET_STATUS_CONNECT, SET_INFO, SET_DOCKER, SET_HARDWARE, SET_DRONE } from './actionTypes';
+import Convert from 'ansi-to-html';
+import { START_LOAD, LOAD, NEW_DOCKER, SET_DOCKER, SET_LOG, SET_HARDWARE } from './actionTypes';
 import * as api from '../../utils/api';
+// import * as api from '../../utils/api_v1_test';
 import { setError } from '../app/actions';
+
+const convert = new Convert();
 
 export const load = () => (
   (dispatch) => {
-    api.get('/interfaces')
+    dispatch({
+      type: START_LOAD,
+      payload: true
+    });
+    api.get('/containers')
       .then((response) => {
         const interfaces = [];
-        _.forEach(response.interfaces, (item) => {
+        _.forEach(response.containers, (item) => {
           interfaces.push({
-            name: item,
-            connect: false,
-            info: {},
-            drone: {},
-            container: {}
+            name: item
           });
         });
         dispatch({
@@ -28,63 +32,6 @@ export const load = () => (
   }
 );
 
-export const getInfo = name => (
-  (dispatch) => {
-    api.get(`/interfaces/${name}`)
-      .then((response) => {
-        _.forEach(response.interfaces[name], (item) => {
-          if (_.has(item[0], 'addr') && _.has(item[0], 'broadcast') && _.has(item[0], 'netmask')) {
-            dispatch({
-              type: SET_INFO,
-              payload: {
-                name,
-                info: {
-                  addr: item[0].addr,
-                  broadcast: item[0].broadcast,
-                  netmask: item[0].netmask
-                }
-              }
-            });
-            dispatch({
-              type: SET_STATUS_CONNECT,
-              payload: {
-                name,
-                status: true
-              }
-            });
-          }
-        });
-      })
-      .catch((error) => {
-        dispatch(setError(`getInfo interface: ${error.toString()}`));
-      });
-  }
-);
-
-export const connect = (name, ssid, password) => (
-  (dispatch) => {
-    api.post(`/interfaces/${name}`, {
-      ssid,
-      password
-    })
-      .then((response) => {
-        dispatch({
-          type: SET_STATUS_CONNECT,
-          payload: {
-            name,
-            status: response.interfaces[name].connected
-          }
-        });
-        if (response.interfaces[name].connected) {
-          dispatch(getInfo(name));
-        }
-      })
-      .catch((error) => {
-        dispatch(setError(`connect: ${error.toString()}`));
-      });
-  }
-);
-
 export const getStatusDocker = name => (
   (dispatch) => {
     api.get(`/containers/${name}`)
@@ -94,23 +41,16 @@ export const getStatusDocker = name => (
             type: SET_DOCKER,
             payload: {
               name,
-              container: {
-                status: 'no'
-              }
+              status: 'no'
             }
           });
         } else {
-          _.forEach(response.containers[name], (item, short) => {
-            dispatch({
-              type: SET_DOCKER,
-              payload: {
-                name,
-                container: {
-                  short,
-                  status: item.status
-                }
-              }
-            });
+          dispatch({
+            type: SET_DOCKER,
+            payload: {
+              name,
+              status: response.containers[name].status
+            }
           });
         }
       })
@@ -120,54 +60,56 @@ export const getStatusDocker = name => (
   }
 );
 
-export const runDocker = (name, image) => (
+export const runDocker = (ssid, password, wlan, master) => (
   (dispatch) => {
     dispatch({
-      type: SET_DOCKER,
-      payload: {
-        name,
-        container: {
-          status: 'run'
-        }
-      }
+      type: NEW_DOCKER,
+      payload: true
     });
-    api.post(`/containers/${name}`, {
-      image
+    api.post('/containers', {
+      image: 'developer',
+      params: JSON.stringify({
+        ssid,
+        password,
+        wlan,
+        master
+      })
     })
       .then((response) => {
-        _.forEach(response.containers[name], (item, short) => {
-          dispatch({
-            type: SET_DOCKER,
-            payload: {
-              name,
-              container: {
-                short,
-                status: item.status
-              }
-            }
-          });
+        if (_.has(response, 'message')) {
+          dispatch(setError(`runDocker: ${response.message}`));
+        } else {
+          dispatch(load());
+        }
+        dispatch({
+          type: NEW_DOCKER,
+          payload: false
         });
       })
       .catch((error) => {
         dispatch(setError(`runDocker: ${error.toString()}`));
+        dispatch({
+          type: NEW_DOCKER,
+          payload: false
+        });
       });
   }
 );
 
-export const getDrone = name => (
+export const getLog = name => (
   (dispatch) => {
-    api.get(`/drones/${name}`)
+    api.get(`/containers/${name}/logs`)
       .then((response) => {
         dispatch({
-          type: SET_DRONE,
+          type: SET_LOG,
           payload: {
             name,
-            drone: response.drones[name]
+            log: convert.toHtml(response.containers[name].logs.replace(/\\x1b/g, '\x1b').replace(/\\n/g, '<br />').replace(/\\'/g, '\''))
           }
         });
       })
       .catch((error) => {
-        dispatch(setError(`getDrone: ${error.toString()}`));
+        dispatch(setError(`getLog: ${error.toString()}`));
       });
   }
 );
