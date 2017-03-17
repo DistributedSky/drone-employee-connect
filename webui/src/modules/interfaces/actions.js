@@ -68,7 +68,7 @@ export const runDocker = (image, form) => (
       payload: true
     });
     api.post('/containers', {
-      image: 'developer',
+      image,
       params: JSON.stringify(form)
     })
       .then((response) => {
