@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import _ from 'lodash';
 import { Main } from '../components/show';
-import { getStatusDocker, getLog } from '../../../modules/interfaces/actions';
+import { getStatusDocker, getLog, remove } from '../../../modules/interfaces/actions';
 
 class ContainerShow extends Component {
   static propTypes = {
     empty: PropTypes.bool.isRequired,
     name: PropTypes.string.isRequired,
     getStatusDocker: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired,
     getLog: PropTypes.func.isRequired
   };
 
@@ -55,11 +56,13 @@ function mapStateToProps(state, props) {
 function mapDispatchToProps(dispatch, props) {
   const actions = bindActionCreators({
     getStatusDocker,
-    getLog
+    getLog,
+    remove
   }, dispatch);
   return {
     getStatusDocker: actions.getStatusDocker,
-    getLog: () => actions.getLog(props.params.name)
+    getLog: () => actions.getLog(props.params.name),
+    onRemove: actions.remove
   };
 }
 

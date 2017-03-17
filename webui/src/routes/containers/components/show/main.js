@@ -11,7 +11,12 @@ const Main = props => (
     }
     {(props.status !== '' && props.status !== 'no' && props.status !== 'run') &&
       <div>
-        <button onClick={() => props.getStatusDocker(props.name)} className="btn btn-info btn-xs pull-right">getStatus</button>
+        <div className="btn-group pull-right">
+          <button onClick={() => props.getStatusDocker(props.name)} className="btn btn-info btn-xs">getStatus</button>
+          <button className="btn btn-xs btn-danger" onClick={() => props.onRemove(props.name)}>
+            <span className="glyphicon glyphicon-trash" />
+          </button>
+        </div>
         <p>Status: <b>{props.status}</b></p>
       </div>
     }
@@ -25,6 +30,7 @@ Main.propTypes = {
   status: PropTypes.string,
   log: PropTypes.string,
   getStatusDocker: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
   getLog: PropTypes.func.isRequired
 };
 

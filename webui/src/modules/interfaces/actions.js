@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { hashHistory } from 'react-router';
 import Convert from 'ansi-to-html';
 import { START_LOAD, LOAD, NEW_DOCKER, SET_DOCKER, SET_LOG, SET_HARDWARE } from './actionTypes';
 import * as api from '../../utils/api';
@@ -67,7 +68,7 @@ export const runDocker = (image, form) => (
       payload: true
     });
     api.post('/containers', {
-      image,
+      image: 'developer',
       params: JSON.stringify(form)
     })
       .then((response) => {
@@ -93,9 +94,10 @@ export const runDocker = (image, form) => (
 
 export const remove = name => (
   (dispatch) => {
-    api.delete(`/containers/${name}`)
+    api.remove(`/containers/${name}`)
       .then(() => {
         dispatch(load());
+        hashHistory.push('/');
       })
       .catch((error) => {
         dispatch(setError(`getLog: ${error.toString()}`));
