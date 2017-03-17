@@ -91,6 +91,18 @@ export const runDocker = (image, form) => (
   }
 );
 
+export const remove = name => (
+  (dispatch) => {
+    api.delete(`/containers/${name}`)
+      .then(() => {
+        dispatch(load());
+      })
+      .catch((error) => {
+        dispatch(setError(`getLog: ${error.toString()}`));
+      });
+  }
+);
+
 export const getLog = name => (
   (dispatch) => {
     api.get(`/containers/${name}/logs`)

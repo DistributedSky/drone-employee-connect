@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router';
 import { Menu } from '../components/common';
-import { load } from '../../../modules/interfaces/actions';
+import { load, remove } from '../../../modules/interfaces/actions';
 
 const ContainerPage = props => (
   <div>
@@ -17,7 +17,7 @@ const ContainerPage = props => (
     <hr />
     <div className="row">
       <div className="col-md-3">
-        <Menu {...props.menu} />
+        <Menu {...props.menu} onRemove={props.remove} />
       </div>
       <div className="col-md-9">
         <div className="panel panel-default">
@@ -37,6 +37,7 @@ ContainerPage.propTypes = {
     active: PropTypes.string
   }).isRequired,
   load: PropTypes.func.isRequired,
+  remove: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state, props) {
@@ -49,10 +50,12 @@ function mapStateToProps(state, props) {
 }
 function mapDispatchToProps(dispatch) {
   const actions = bindActionCreators({
-    load
+    load,
+    remove
   }, dispatch);
   return {
-    load: actions.load
+    load: actions.load,
+    remove: actions.remove
   };
 }
 
