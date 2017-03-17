@@ -4,7 +4,7 @@ class Connect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      active: ''
+      active: this.props.active
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -31,11 +31,13 @@ class Connect extends React.Component {
 }
 
 Connect.propTypes = {
+  active: PropTypes.string,
   list: PropTypes.array,
   setActive: PropTypes.func.isRequired
 };
 
 Connect.defaultProps = {
+  active: '',
   list: []
 };
 

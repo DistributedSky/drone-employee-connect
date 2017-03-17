@@ -4,18 +4,15 @@ import _ from 'lodash';
 class Connect extends React.Component {
   constructor(props) {
     super(props);
-    /* this.state = {
-      ssid: '',
-      password: '',
-      wlan: '',
-      master: ''
-    };*/
+    this.state = {
+      name: ''
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentWillReceiveProps(next) {
-    if (next.fields !== this.props.fields) {
+    if (!_.isEqual(next.fields, this.props.fields)) {
       const state = {};
       _.forEach(next.fields, (item) => {
         state[item.key] = '';
@@ -75,8 +72,8 @@ class Connect extends React.Component {
   render() {
     return (
       <form className="form" onSubmit={this.handleSubmit}>
-        {this.props.fields.map(item =>
-          this.field(item)
+        {this.props.fields.map((item, index) =>
+          <div key={index}>{this.field(item)}</div>
         )}
         {(this.props.newStatus) ? 'run' : <button type="submit" className="btn btn-info">Run</button>}
       </form>
