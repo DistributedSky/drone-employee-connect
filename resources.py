@@ -15,35 +15,45 @@ class Containers(Resource):
         self.parser.add_argument('params')
 
     def get(self):
-        containerIds = map(lambda x: x.short_id, from_env().containers.list())
-        return {'containers': list(containerIds)} 
+        names = map(lambda x: x.name, from_env().containers.list())
+        return {'containers': list(names)}
 
     def post(self):
         args = self.parser.parse_args()
         params = json.loads(args['params'])
         env = map(lambda key: key.upper()+'='+params[key], params)
-        container = from_env().containers.run('droneemployee/'+args['image'],
+        container = from_env().containers.run('droneemployee/'+args['image']+':armhf',
+                                              name=params['name'],
                                               environment=list(env),
                                               privileged=True,
                                               detach=True)
+        if 'wlan' in params:
+            iwcall = 'iw phy phy{0} set netns {1}'.format(params['wlan'][-1], container.attrs['State']['Pid'])
+            wpacall = 'sh -c "wpa_passphrase {0} {1} > /tmp/wpa.conf"'.format(params['ssid'], params['password'])
+            supcall = 'sudo wpa_supplicant -B -i {0} -c /tmp/wpa.conf'.format(params['wlan'])
+            print(system_call(iwcall))
+            print(container.exec_run(wpacall))
+            print(container.exec_run(supcall))
+            print(container.exec_run('sudo dhcpcd {0}'.format(params['wlan'])))
+
         return {'containers': {
-                    container.short_id: {
+                    container.name: {
                         'status': container.status,
                         'image': container.attrs['Config']['Image']
                     }}}
 
 class Container(Resource):
-    def get(self, short_id):
-        c = from_env().containers.get(short_id)
+    def get(self, name):
+        c = from_env().containers.get(name)
         return {'containers': {
-                    short_id: {
+                    name: {
                         'status': c.status,
                         'image': c.attrs['Config']['Image']
                         }}}
 
-    def delete(self, short_id):
+    def delete(self, name):
         try:
-            c = from_env().containers.get(short_id);
+            c = from_env().containers.get(name);
             c.stop()
             c.remove()
             return {'success': True}
@@ -51,10 +61,10 @@ class Container(Resource):
             return {'success': False, 'error': e}
 
 class ContainerLogs(Resource):
-    def get(self, short_id):
+    def get(self, name):
         return {'containers': {
-                    short_id: {
-                        'logs': '{0}'.format(from_env().containers.get(short_id).logs())
+                    name: {
+                        'logs': '{0}'.format(from_env().containers.get(name).logs())
                         }}}
 
 class Hardware(Resource):
@@ -75,6 +85,6 @@ class Hardware(Resource):
 
 api = Api(app)
 api.add_resource(Containers,    API_PREFIX+'/containers')
-api.add_resource(Container,     API_PREFIX+'/containers/<short_id>')
-api.add_resource(ContainerLogs, API_PREFIX+'/containers/<short_id>/logs')
+api.add_resource(Container,     API_PREFIX+'/containers/<name>')
+api.add_resource(ContainerLogs, API_PREFIX+'/containers/<name>/logs')
 api.add_resource(Hardware,      API_PREFIX+'/hardware')

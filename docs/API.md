@@ -38,7 +38,7 @@ Run container for given interface
 }
 ```
 
-### `/api/v1/containers/<short_id>`
+### `/api/v1/containers/<name>`
 
 #### GET
 
@@ -56,7 +56,19 @@ Take container status by interface identifier
 }
 ```
 
-### `/api/v1/containers/<short_id>/logs`
+#### DELETE
+
+Stop and remove container
+
+##### Response
+
+```json
+{
+    "success": true
+}
+```
+
+### `/api/v1/containers/<name>/logs`
 
 #### GET
 
