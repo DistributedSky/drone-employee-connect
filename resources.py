@@ -21,9 +21,15 @@ class Containers(Resource):
     def post(self):
         args = self.parser.parse_args()
         params = json.loads(args['params'])
-        env = map(lambda key: key.upper()+'='+params[key], params)
+        env = map(lambda key: key.upper().strip()+'='+params[key].strip(), params)
+
+        network = params['name']+'-net'
+        if 'master' in params:
+            network = params['master']+'-net'
+
         container = from_env().containers.run('droneemployee/'+args['image']+':armhf',
                                               name=params['name'],
+                                              net=network,
                                               environment=list(env),
                                               privileged=True,
                                               detach=True)
