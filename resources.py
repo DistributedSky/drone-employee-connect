@@ -61,9 +61,8 @@ class Container(Resource):
 
     def delete(self, name):
         try:
-            c = from_env().containers.get(name);
-            c.stop()
-            c.remove()
+            c = from_env().containers.get(name)
+            c.remove(force=True)
             return {'success': True}
         except e:
             return {'success': False, 'error': e}
