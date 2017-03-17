@@ -26,10 +26,12 @@ class Containers(Resource):
         network = params['name']+'-net'
         if 'master' in params:
             network = params['master']+'-net'
+        else:
+            from_env().networks.create(network)
 
         container = from_env().containers.run('droneemployee/'+args['image']+':armhf',
                                               name=params['name'],
-                                              net=network,
+                                              networks=[network],
                                               environment=list(env),
                                               privileged=True,
                                               detach=True)
