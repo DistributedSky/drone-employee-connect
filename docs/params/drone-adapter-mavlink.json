@@ -33,5 +33,20 @@
         "type": "text",
         "key": "mission_hash",
         "label": "Drone mission IPFS hash"
+    },
+    {
+        "type": "text",
+        "key": "web3_host",
+        "label": "Ethereum node URI"
+    },
+    {
+        "type": "text",
+        "key": "web3_priv_key",
+        "label": "Blockchain private key"
+    },
+    {
+        "type": "text",
+        "key": "route_mutex",
+        "label": "Route mutex contract address"
     }
 }
