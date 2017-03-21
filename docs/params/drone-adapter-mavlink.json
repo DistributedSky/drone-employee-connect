@@ -23,5 +23,15 @@
         "type": "container",
         "key": "master",
         "label": "Drone master"
+    },
+    {
+        "type": "text",
+        "key": "ipfs_host",
+        "label": "IPFS node URI"
+    },
+    {
+        "type": "text",
+        "key": "mission_hash",
+        "label": "Drone mission IPFS hash"
     }
 }
