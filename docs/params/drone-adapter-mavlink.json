@@ -42,7 +42,12 @@
     {
         "type": "text",
         "key": "web3_priv_key",
-        "label": "Blockchain private key"
+        "label": "Blockchain account private key"
+    },
+    {
+        "type": "text",
+        "key": "web3_account",
+        "label": "Blockchain account address"
     },
     {
         "type": "text",
