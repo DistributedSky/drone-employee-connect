@@ -25,7 +25,7 @@ class Containers(Resource):
 
         network = params['name']+'-net'
         if 'master' in params:
-            network = params['master']+'-net'
+            network = 'container:'+params['master']
         else:
             from_env().networks.create(network, driver='bridge')
 
