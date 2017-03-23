@@ -46,11 +46,6 @@
     },
     {
         "type": "text",
-        "key": "web3_account",
-        "label": "Blockchain account address"
-    },
-    {
-        "type": "text",
         "key": "route_mutex",
         "label": "Route mutex contract address"
     }
