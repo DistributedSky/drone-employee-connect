@@ -64,9 +64,14 @@ class Container(Resource):
         try:
             c = from_env().containers.get(name)
             c.remove(force=True)
-            return {'success': True}
-        except e:
-            return {'success': False, 'error': e}
+
+            if name+'-net' in from_env().networks.list():
+                n = from_env().networks.get(name+'-net')
+                n.remove()
+        except:
+            return {'success': False}
+
+        return {'success': True}
 
 class ContainerLogs(Resource):
     def get(self, name):
