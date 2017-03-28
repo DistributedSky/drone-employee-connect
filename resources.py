@@ -15,7 +15,7 @@ class Containers(Resource):
         self.parser.add_argument('params')
 
     def get(self):
-        names = map(lambda x: x.name, from_env().containers.list())
+        names = map(lambda x: x.name, from_env().containers.list(all=True))
         return {'containers': list(names)}
 
     def post(self):
