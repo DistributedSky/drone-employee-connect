@@ -35,15 +35,9 @@ class Containers(Resource):
                                               environment=list(env),
                                               privileged=True,
                                               detach=True)
-        container = from_env().containers.get(params['name'])
-        if 'wlan' in params:
-            iwcall = 'iw phy phy{0} set netns {1}'.format(params['wlan'][-1], container.attrs['State']['Pid'])
-            wpacall = 'sh -c "wpa_passphrase {0} {1} > /tmp/wpa.conf"'.format(params['ssid'], params['password'])
-            supcall = 'sudo wpa_supplicant -B -i {0} -c /tmp/wpa.conf'.format(params['wlan'])
-            print(system_call(iwcall))
-            print(container.exec_run(wpacall))
-            print(container.exec_run(supcall))
-            print(container.exec_run('sudo dhcpcd {0}'.format(params['wlan'])))
+
+        with open('/etc/dronelinks.csv', 'a') as links:
+            links.write('{0},{1},{2},{3}'.format(container.name,params['wlan'],params['ssid'],params['password']))
 
         return {'containers': {
                     container.name: {
