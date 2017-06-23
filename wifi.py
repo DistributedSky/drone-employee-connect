@@ -8,9 +8,9 @@ def spawn(name, wlan, ssid, password):
     wpacall = 'sh -c "wpa_passphrase {0} {1} > /tmp/wpa.conf"'.format(ssid, password)
     supcall = 'sudo wpa_supplicant -B -i {0} -c /tmp/wpa.conf'.format(wlan)
     print(system_call(iwcall))
-    print(container.exec_run(wpacall))
-    print(container.exec_run(supcall))
-    print(container.exec_run('sudo dhcpcd {0}'.format(wlan)))
+    print(c.exec_run(wpacall))
+    print(c.exec_run(supcall))
+    print(c.exec_run('sudo dhcpcd {0}'.format(wlan)))
 
 if __name__ == '__main__':
     links = [x[:-1].split(',') for x in open('/etc/dronelinks.csv', 'r')]
