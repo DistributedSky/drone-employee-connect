@@ -38,7 +38,7 @@ class Containers(Resource):
 
         if 'wlan' in params:
             with open('/etc/dronelinks.csv', 'a') as links:
-                links.write('{0},{1},{2},{3}'.format(params['name'],params['wlan'],params['ssid'],params['password']))
+                links.write('{0},{1},{2},{3}\n'.format(params['name'],params['wlan'],params['ssid'],params['password']))
             wifi.spawn(params['name'],params['wlan'],params['ssid'],params['password'])
 
         return {'containers': {
