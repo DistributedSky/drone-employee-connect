@@ -4,7 +4,7 @@ from os import system as system_call
 from netifaces import interfaces 
 from docker import from_env
 from application import app
-import psutil, time, json
+import psutil, time, json, wifi
 
 API_PREFIX = '/api/v1'
 
