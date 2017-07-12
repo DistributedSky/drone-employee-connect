@@ -20,6 +20,11 @@
         "label": "WIFI interface"
     },
     {
+        "type": "container",
+        "key": "master",
+        "label": "Drone master"
+    },
+    {
         "type": "text",
         "key": "adapter",
         "label": "Drone adapter value"
