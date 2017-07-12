@@ -1,0 +1,27 @@
+{
+    {
+        "type": "text",
+        "key": "name",
+        "label": "Name"
+    },
+    {
+        "type": "text",
+        "key": "ssid",
+        "label": "SSID"
+    },
+    {
+        "type": "password",
+        "key": "password",
+        "label": "Password"
+    },
+    {
+        "type": "wlan",
+        "key": "wlan",
+        "label": "WIFI interface"
+    },
+    {
+        "type": "text",
+        "key": "adapter",
+        "label": "Drone adapter value"
+    }
+}
