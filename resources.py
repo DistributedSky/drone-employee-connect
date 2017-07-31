@@ -79,7 +79,7 @@ class Container(Resource):
         if args['cmd'] == 'logs':
             return {'containers': {name: { 'logs': '{0}'.format(c.logs()) }}}
         elif args['cmd'] == 'restart':
-            return {'containers': {name: { 'logs': '{0}'.format(c.restart()) }}}
+            return {'containers': {name: { 'restart': '{0}'.format(c.restart()) }}}
         else:
             return {'success': False}
 
