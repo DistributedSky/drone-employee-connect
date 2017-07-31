@@ -68,11 +68,12 @@ Stop and remove container
 }
 ```
 
-### `/api/v1/containers/<name>/logs`
+#### POST 
 
-#### GET
+##### Request
 
-Take container full logs
+* `cmd = logs` - Take container full logs
+* `cmd = restart` - Restart the container
 
 ##### Response
 

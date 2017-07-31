@@ -48,6 +48,10 @@ class Containers(Resource):
                     }}}
 
 class Container(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('cmd')
+
     def get(self, name):
         c = from_env().containers.get(name)
         return {'containers': {
@@ -69,12 +73,15 @@ class Container(Resource):
 
         return {'success': True}
 
-class ContainerLogs(Resource):
-    def get(self, name):
-        return {'containers': {
-                    name: {
-                        'logs': '{0}'.format(from_env().containers.get(name).logs())
-                        }}}
+    def post(self, name):
+        args = self.parser.parse_args()
+        c = from_env().containers.get(name)
+        if args['cmd'] == 'logs':
+            return {'containers': {name: { 'logs': '{0}'.format(c.logs()) }}}
+        elif args['cmd'] == 'restart':
+            return {'containers': {name: { 'logs': '{0}'.format(c.restart()) }}}
+        else:
+            return {'success': False}
 
 class Hardware(Resource):
     def get(self):
@@ -93,7 +100,6 @@ class Hardware(Resource):
                     }}}
 
 api = Api(app)
-api.add_resource(Containers,    API_PREFIX+'/containers')
-api.add_resource(Container,     API_PREFIX+'/containers/<name>')
-api.add_resource(ContainerLogs, API_PREFIX+'/containers/<name>/logs')
-api.add_resource(Hardware,      API_PREFIX+'/hardware')
+api.add_resource(Containers, API_PREFIX+'/containers')
+api.add_resource(Container,  API_PREFIX+'/containers/<name>')
+api.add_resource(Hardware,   API_PREFIX+'/hardware')
