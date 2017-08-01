@@ -13,6 +13,7 @@ const Main = props => (
       <div>
         <div className="btn-group pull-right">
           <button onClick={() => props.getStatusDocker(props.name)} className="btn btn-info btn-xs">getStatus</button>
+          <button onClick={() => props.onRestart(props.name)} className="btn btn-warning btn-xs">restart</button>
           <button className="btn btn-xs btn-danger" onClick={() => props.onRemove(props.name)}>
             <span className="glyphicon glyphicon-trash" />
           </button>
@@ -31,6 +32,7 @@ Main.propTypes = {
   log: PropTypes.string,
   getStatusDocker: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
+  onRestart: PropTypes.func.isRequired,
   getLog: PropTypes.func.isRequired
 };
 
