@@ -105,9 +105,26 @@ export const remove = name => (
   }
 );
 
+export const restart = name => (
+  (dispatch) => {
+    api.post(`/containers/${name}`, {
+      cmd: 'restart'
+    })
+      .then(() => {
+        dispatch(load());
+        hashHistory.push('/');
+      })
+      .catch((error) => {
+        dispatch(setError(`restart: ${error.toString()}`));
+      });
+  }
+);
+
 export const getLog = name => (
   (dispatch) => {
-    api.get(`/containers/${name}/logs`)
+    api.post(`/containers/${name}`, {
+      cmd: 'logs'
+    })
       .then((response) => {
         dispatch({
           type: SET_LOG,
