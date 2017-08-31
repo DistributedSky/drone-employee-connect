@@ -25,16 +25,18 @@ class Containers(Resource):
 
         network = params['name']+'-net'
         if 'master' in params:
-            network = 'container:'+params['master']
+            network = params['master']+'-net'
         else:
             from_env().networks.create(network, driver='bridge')
 
         container = from_env().containers.run('droneemployee/'+args['image']+':armhf',
                                               name=params['name'],
-                                              network_mode=network,
+                                              network=network,
                                               environment=list(env),
                                               privileged=True,
-                                              detach=True)
+                                              detach=True,
+					      restart_policy={"Name":"always"}
+					      )
 
         if 'wlan' in params:
             with open('/etc/dronelinks.csv', 'a') as links:
