@@ -17,10 +17,5 @@ if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
 fi
 
-if [ "$(docker ps -a -q)" ]; then
-  docker start $(docker ps -a -q)
-  sleep 15
-  docker start $(docker ps -a -q)
-  sleep 15
-  cd /home/pi/drone-employee-connect && . venv/bin/activate && python wifi.py
-fi
+cd /home/pi/drone-employee-connect && . venv/bin/activate && python wifi.py
+
