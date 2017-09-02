@@ -4,7 +4,30 @@ from os import system as system_call
 from netifaces import interfaces 
 from docker import from_env
 from application import app
-import psutil, time, json, wifi
+import psutil, time, json, wifi, sqlite3
+from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy.orm import mapper
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class Wlans(Base):
+    __tablename__ = 'wlanstb'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    wlan = Column(String)
+    ssid = Column(String)
+    password = Column(String)
+    
+    def __init__(self, name, wlan, ssid, password):
+        self.name = name
+        self.wlan = wlan
+        self.ssid = ssid
+        self.password = password
+    def __repr__(self):
+        return "<User('%s','%s','%s','%s')>" % (self.name, self.wlan, self.ssid, self.password)
 
 API_PREFIX = '/api/v1'
 
@@ -39,10 +62,23 @@ class Containers(Resource):
 					      )
 
         if 'wlan' in params:
-            with open('/etc/dronelinks.csv', 'a') as links:
-                links.write('{0},{1},{2},{3}\n'.format(params['name'],params['wlan'],params['ssid'],params['password']))
-            wifi.spawn(params['name'],params['wlan'],params['ssid'],params['password'])
+             engine = create_engine('sqlite:///wlans.db', echo=True)
+             Session = sessionmaker(bind=engine)
+             session = Session()
+             Base.metadata.create_all(engine)
+             wlan_new = Wlans(params['name'],params['wlan'],params['ssid'],params['password'])
+             print(wlan_new.id)
+             for instance in session.query(Wlans).order_by(Wlans.id): 
+                 if instance.wlan == wlan_new.wlan:
+                      print(instance)
+                      session.delete(instance)
+             session.add(wlan_new)
+             session.commit()
 
+             #with open('/etc/dronelinks.csv', 'a') as links:
+                 #links.write('{0},{1},{2},{3}\n'.format(params['name'],params['wlan'],params['ssid'],params['password']))
+
+             wifi.spawn(params['name'],params['wlan'],params['ssid'],params['password'])
         return {'containers': {
                     container.name: {
                         'status': container.status,
@@ -100,6 +136,9 @@ class Hardware(Resource):
                         'cpu': psutil.cpu_percent(interval=1, percpu=True),
                         'mem': psutil.virtual_memory().percent
                     }}}
+
+
+
 
 api = Api(app)
 api.add_resource(Containers, API_PREFIX+'/containers')
