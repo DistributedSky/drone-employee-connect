@@ -1,33 +1,15 @@
-from flask_restful import Resource, Api, reqparse
-from platform import machine, processor, system
+from netifaces import interfaces
 from os import system as system_call
-from netifaces import interfaces 
+from platform import machine, system
+import json
+import psutil
+import time
+import db
+from db import *
+import wifi 
 from docker import from_env
+from flask_restful import Resource, Api, reqparse
 from application import app
-import psutil, time, json, wifi, sqlite3
-from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
-from sqlalchemy.orm import mapper
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
-
-class Wlans(Base):
-    __tablename__ = 'wlanstb'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    wlan = Column(String)
-    ssid = Column(String)
-    password = Column(String)
-    
-    def __init__(self, name, wlan, ssid, password):
-        self.name = name
-        self.wlan = wlan
-        self.ssid = ssid
-        self.password = password
-    def __repr__(self):
-        return "<User('%s','%s','%s','%s')>" % (self.name, self.wlan, self.ssid, self.password)
 
 API_PREFIX = '/api/v1'
 
@@ -62,19 +44,7 @@ class Containers(Resource):
 					      )
 
         if 'wlan' in params:
-             engine = create_engine('sqlite:///wlans.db', echo=True)
-             Session = sessionmaker(bind=engine)
-             session = Session()
-             Base.metadata.create_all(engine)
-             wlan_new = Wlans(params['name'],params['wlan'],params['ssid'],params['password'])
-             print(wlan_new.id)
-             for instance in session.query(Wlans).order_by(Wlans.id): 
-                 if instance.wlan == wlan_new.wlan:
-                      print(instance)
-                      session.delete(instance)
-             session.add(wlan_new)
-             session.commit()
-
+             check_wlan(params['name'],params['wlan'],params['ssid'],params['password'])
              #with open('/etc/dronelinks.csv', 'a') as links:
                  #links.write('{0},{1},{2},{3}\n'.format(params['name'],params['wlan'],params['ssid'],params['password']))
 
@@ -99,6 +69,7 @@ class Container(Resource):
                         }}}
 
     def delete(self, name):
+        print(del_wlan(name))
         try:
             c = from_env().containers.get(name)
             c.remove(force=True)
@@ -106,11 +77,14 @@ class Container(Resource):
             if name+'-net' in from_env().networks.list():
                 n = from_env().networks.get(name+'-net')
                 n.remove()
+            
+            system_call("reboot")
+            
         except:
             return {'success': False}
-
         return {'success': True}
-
+        
+        
     def post(self, name):
         args = self.parser.parse_args()
         c = from_env().containers.get(name)
