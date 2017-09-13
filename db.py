@@ -31,8 +31,8 @@ Base.metadata.create_all(engine)
     
 def add_wlan(name, wlan, ssid, password):
     session = Session()
-    new_wlan=Wlans(name,wlan,ssid,password)
     try:
+       new_wlan=Wlans(name,wlan,ssid,password)
        session.add(new_wlan)
        session.commit()
        session.flush()
