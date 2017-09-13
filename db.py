@@ -10,7 +10,7 @@ class Wlans(Base):
     __tablename__ = 'wlanstb'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    wlan = Column(String)
+    wlan = Column(String(30), nullable=False, unique=True)
     ssid = Column(String)
     password = Column(String)
 
