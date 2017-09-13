@@ -32,9 +32,12 @@ Base.metadata.create_all(engine)
 def add_wlan(name, wlan, ssid, password):
     session = Session()
     new_wlan=Wlans(name,wlan,ssid,password)
-    session.add(new_wlan)
-    session.commit()
-    session.flush()
+    try:
+       session.add(new_wlan)
+       session.commit()
+       session.flush()
+    except:
+       print("Oops!  That was no valid wlan.  Try again...")
     
 def update_wlan(name,wlan,ssid,password):
     session = Session()
@@ -45,10 +48,10 @@ def update_wlan(name,wlan,ssid,password):
 def check_wlan(name,wlan,ssid,password):
     session = Session()
     new_wlan=Wlans(name,wlan,ssid,password)
-    if new_wlan.wlan in repr(session.query(Wlans.wlan).order_by(Wlans.id).all()):
+    if len(new_wlan.wlan)>=8 and session.query(Wlans.wlan).filter(Wlans.wlan == new_wlan.wlan).all():
        session.flush()
        update_wlan(name,wlan,ssid,password)
-    else:
+    elif len(new_wlan.wlan)>=8:
        session.flush()
        add_wlan(name, wlan, ssid, password)
     
@@ -57,6 +60,19 @@ def del_wlan(name):
     session.query(Wlans).filter(Wlans.name == name).delete()
     session.commit()
     session.flush()        
+
+
+'''
+add_wlan("1","2","3","4")
+session = Session()
+print session.query(Wlans).all()
+if len("12345678") >= 8 and session.query(Wlans.wlan).filter(Wlans.wlan == "2").all():
+   print True
+else:
+   print False
+session.flush()
+'''
+
 #check_wlan("4","2","3","5")
 #print session.query(Wlans).filter(Wlans.wlan == "2").update({Wlans.name: "hui"}, synchronize_session=False)
 #del_wlan("Solo-1")
