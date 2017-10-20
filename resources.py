@@ -1,10 +1,15 @@
-from flask_restful import Resource, Api, reqparse
-from platform import machine, processor, system
+from netifaces import interfaces
 from os import system as system_call
-from netifaces import interfaces 
+from platform import machine, system
+import json
+import psutil
+import time
+import db
+from db import *
+import wifi 
 from docker import from_env
+from flask_restful import Resource, Api, reqparse
 from application import app
-import psutil, time, json, wifi
 
 API_PREFIX = '/api/v1'
 
@@ -39,10 +44,11 @@ class Containers(Resource):
 					      )
 
         if 'wlan' in params:
-            with open('/etc/dronelinks.csv', 'a') as links:
-                links.write('{0},{1},{2},{3}\n'.format(params['name'],params['wlan'],params['ssid'],params['password']))
-            wifi.spawn(params['name'],params['wlan'],params['ssid'],params['password'])
+             check_wlan(params['name'],params['wlan'],params['ssid'],params['password'])
+             #with open('/etc/dronelinks.csv', 'a') as links:
+                 #links.write('{0},{1},{2},{3}\n'.format(params['name'],params['wlan'],params['ssid'],params['password']))
 
+             wifi.spawn(params['name'],params['wlan'],params['ssid'],params['password'])
         return {'containers': {
                     container.name: {
                         'status': container.status,
@@ -63,6 +69,7 @@ class Container(Resource):
                         }}}
 
     def delete(self, name):
+        print(del_wlan(name))
         try:
             c = from_env().containers.get(name)
             c.remove(force=True)
@@ -70,11 +77,14 @@ class Container(Resource):
             if name+'-net' in from_env().networks.list():
                 n = from_env().networks.get(name+'-net')
                 n.remove()
+            
+            system_call("reboot")
+            
         except:
             return {'success': False}
-
         return {'success': True}
-
+        
+        
     def post(self, name):
         args = self.parser.parse_args()
         c = from_env().containers.get(name)
@@ -100,6 +110,9 @@ class Hardware(Resource):
                         'cpu': psutil.cpu_percent(interval=1, percpu=True),
                         'mem': psutil.virtual_memory().percent
                     }}}
+
+
+
 
 api = Api(app)
 api.add_resource(Containers, API_PREFIX+'/containers')
